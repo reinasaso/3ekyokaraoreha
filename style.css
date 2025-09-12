@@ -45,7 +45,7 @@
     max-width: 400px;
     margin: 20px auto;
     padding: 25px;
-    background: #ffffff;
+    background: rgba(231, 76, 60, 0.6);
     border-radius: 15px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.5);
   }
@@ -106,7 +106,7 @@
   }
 
   #statusList li {
-    background: #ffffff;
+    background: rgba(231, 76, 60, 0.6);
     margin: 8px 0;
     padding: 12px;
     border-radius: 10px;
@@ -117,7 +117,7 @@
   }
 
   #statusList li:hover {
-    background: #ffffff;
+    background: rgba(231, 76, 60, 0.6);
   }
 
   /* レスポンシブ */
