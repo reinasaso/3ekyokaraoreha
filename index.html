@@ -12,6 +12,14 @@
   <!-- 予約フォーム -->
   <form id="reserveForm">
     <label>名前（ニックネーム）: <input type="text" id="name" required></label><br>
+    <label>公演回:
+      <select id="showtime">
+        <option value="09:40">09:40公演</option>
+        <option value="11:00">11:00公演</option>
+        <option value="12:20">12:20公演</option>
+        <option value="13:40">13:40公演</option>
+      </select>
+    </label><br>
     <label>人数: <input type="number" id="numSeats" value="1" min="1" max="10" required></label><br>
     <button type="submit">予約する</button>
   </form>
@@ -21,6 +29,14 @@
   <h2>キャンセル</h2>
   <form id="cancelForm">
     <label>名前: <input type="text" id="cancelName" required></label><br>
+    <label>公演回:
+      <select id="cancelShowtime">
+        <option value="09:40">09:40公演</option>
+        <option value="11:00">11:00公演</option>
+        <option value="12:20">12:20公演</option>
+        <option value="13:40">13:40公演</option>
+      </select>
+    </label><br>
     <button type="submit">キャンセル</button>
   </form>
   <p id="cancelMessage"></p>
@@ -47,8 +63,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const showtime = "09:40";
-    const defaultSeats = 40;
+    const defaultSeats = {
+      "09:40": 40,
+      "11:00": 40,
+      "12:20": 40,
+      "13:40": 40,
+    };
 
     const seatRef = ref(db, "shows/" + showtime);
     get(seatRef).then((snap) => {
@@ -58,6 +78,7 @@
     document.getElementById("reserveForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("name").value;
+      const showtime = document.getElementById("showtime").value;
       const numSeats = parseInt(document.getElementById("numSeats").value);
       const reservationsRef = ref(db, "reservations_" + showtime);
       const snapshot = await get(reservationsRef);
@@ -66,7 +87,9 @@
       if (snapshot.exists()) {
         snapshot.forEach((child) => {
           const data = child.val();
-          if (data.name === name) duplicate = true;
+          if (data.name === name && data.showtime === showtime) {
+            duplicate = true;
+          }
         });
       }
       if (duplicate) {
@@ -75,22 +98,24 @@
         return;
       }
 
+      const seatRef = ref(db, "shows/" + showtime);
       const seatSnap = await get(seatRef);
-      let seats = seatSnap.exists() ? seatSnap.val().seats : defaultSeats;
+      let seats = seatSnap.exists() ? seatSnap.val().seats : defaultSeats[showtime];
 
       if (seats >= numSeats) {
         await set(seatRef, { seats: seats - numSeats });
-        await push(reservationsRef, { name, seats: numSeats });
+        await push(reservationsRef, { name, showtime, seats: numSeats });
         document.getElementById("message").textContent =
-          `予約完了！残席: ${seats - numSeats}`;
+          `予約を完了しました！`;
       } else {
-        document.getElementById("message").textContent = "残席が足りません";
+        document.getElementById("message").textContent = "残席がありません";
       }
     });
 
     document.getElementById("cancelForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const cancelName = document.getElementById("cancelName").value;
+      const cancelShowtime = document.getElementById("cancelShowtime").value;
       const reservationsRef = ref(db, "reservations_" + showtime);
       const snapshot = await get(reservationsRef);
 
@@ -99,13 +124,14 @@
         let cancelSeats = 0;
         snapshot.forEach((child) => {
           const data = child.val();
-          if (data.name === cancelName) {
+          if (data.name === cancelName && data.showtime === cancelShowtime) {
             foundKey = child.key;
             cancelSeats = data.seats || 1;
           }
         });
 
         if (foundKey) {
+          const seatRef = ref(db, "shows/" + cancelShowtime);
           const seatSnap = await get(seatRef);
           let seats = seatSnap.exists() ? seatSnap.val().seats : 0;
           await set(seatRef, { seats: seats + cancelSeats });
@@ -120,10 +146,18 @@
     });
 
     const statusList = document.getElementById("statusList");
+    for (let t in defaultSeats) {
+      const seatRef = ref(db, "shows/" + t);
     onValue(seatRef, (snap) => {
       const seats = snap.exists() ? snap.val().seats : defaultSeats;
-      statusList.innerHTML = `<li>${showtime} 公演：残席 ${seats}</li>`;
+      const li = document.getElementById("status-" + t) || document.createElement("li");
+        li.id = "status-" + t;
+        li.textContent = `${t} 公演：残席 ${seats}`;
+        if (!document.getElementById("status-" + t)) 
+      statusList.innerHTML = `<li>${showtime} 公演：残席 ${seats}`;
+        if (!document.getElementById("status-" + t)) statusList.appendChild(li);
     });
+    }
   </script>
 </body>
 </html>
