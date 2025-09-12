@@ -8,6 +8,7 @@
   <h3>千葉県立千葉高等学校3年E組</h3>
   <h1>今日から俺は!!</h1>
   <h2>公演 予約サイト</h2>
+  <h3>※開場は各公演開始時間の5分前を予定しています。</h3>
 
   <!-- 予約フォーム -->
   <form id="reserveForm">
@@ -76,6 +77,20 @@
         if (!snap.exists()) set(seatRef, { seats: defaultSeats[t] });
       });
     }
+
+    const statusList = document.getElementById("statusList");
+    const showsRef = ref(db, "shows");
+
+    onValue(showsRef, (snapshot) => {
+      statusList.innerHTML = ""; 
+      snapshot.forEach((childSnap) => {
+        const time = childSnap.key;
+        const data = childSnap.val();
+        const li = document.createElement("li");
+      li.textContent = `${time} の残り座席数: ${data.seats}`;
+      statusList.appendChild(li);
+    });
+  });
 
     document.getElementById("reserveForm").addEventListener("submit", async (e) => {
       e.preventDefault();
