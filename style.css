@@ -1,0 +1,132 @@
+<style>
+  /* 背景と全体設定 */
+  body {
+    font-family: 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
+    background: linear-gradient(to bottom, #2c3e50, #34495e);
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+
+  /* 見出し */
+  h1, h2, h3 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    color: #f39c12; /* 黄金色で舞台感 */
+    text-shadow: 2px 2px 5px #000;
+  }
+
+  h2 {
+    color: #e74c3c; /* 赤系で華やかに */
+    text-shadow: 1px 1px 3px #000;
+    margin-top: 40px;
+  }
+
+  h3 {
+    color: #ecf0f1;
+    font-weight: normal;
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  /* 注意書き */
+  label[for="note"], label:first-of-type {
+    font-weight: normal;
+    color: #ecf0f1;
+    text-align: center;
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  /* フォーム */
+  form {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+  }
+
+  label {
+    display: block;
+    margin: 10px 0 5px 0;
+    font-weight: bold;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    margin-top: 2px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  /* ボタン */
+  button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    background: linear-gradient(to right, #f1c40f, #e67e22);
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  button:hover {
+    background: linear-gradient(to right, #e67e22, #f1c40f);
+  }
+
+  /* メッセージ */
+  #message, #cancelMessage {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-shadow: 1px 1px 3px #000;
+  }
+
+  /* 予約状況 */
+  #statusList {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  #statusList li {
+    background: rgba(255,255,255,0.1);
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: 0.3s;
+  }
+
+  #statusList li:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+    form {
+      padding: 20px;
+    }
+  }
+</style>
