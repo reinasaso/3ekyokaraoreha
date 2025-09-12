@@ -8,13 +8,13 @@
   <h3>千葉県立千葉高等学校3年E組</h3>
   <h1>今日から俺は!!</h1>
   <h2>公演 予約サイト</h2>
-  <label>※開場は各公演開始時間の5分前を予定しています。</label>
+  <label>※来場は各公演開始時間の10分前にお願いいたします。</label>
 
   <!-- 予約フォーム -->
   <form id="reserveForm">
     <label>名前（ニックネーム）: <input type="text" id="name" required></label><br>
     <label>公演回:
-      <select id="showtime">
+      <select id="showtime" required>
         <option value="09:40">09:40公演</option>
         <option value="11:00">11:00公演</option>
         <option value="12:20">12:20公演</option>
@@ -31,7 +31,7 @@
   <form id="cancelForm">
     <label>名前: <input type="text" id="cancelName" required></label><br>
     <label>公演回:
-      <select id="cancelShowtime">
+      <select id="cancelShowtime" required>
         <option value="09:40">09:40公演</option>
         <option value="11:00">11:00公演</option>
         <option value="12:20">12:20公演</option>
@@ -71,6 +71,44 @@
       "13:40": 27,
     };
 
+    const showTimes = ["09:40", "11:00", "12:20", "13:40"];
+    const showtimeSelect = document.getElementById("showtime");
+
+    function parseTimeToDate(timeStr) {
+      const [h, m] = timeStr.split(":").map(Number);
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+    }
+
+    function updateShowtimeOptions() {
+      showtimeSelect.innerHTML = ""; // 一度クリア
+      const now = new Date();
+
+      showTimes.forEach((t) => {
+        const showDate = parseTimeToDate(t);
+        // 30分前
+        const showDateMinus30 = new Date(showDate.getTime() - 30 * 60 * 1000);
+
+        if (now >= showDateMinus30) {
+          const opt = document.createElement("option");
+          opt.value = t;
+          opt.textContent = `${t} 公演`;
+          showtimeSelect.appendChild(opt);
+         }
+      });
+
+      if (showtimeSelect.options.length === 0) {
+        const opt = document.createElement("option");
+        opt.textContent = "現在選択できる公演はありません";
+        opt.disabled = true;
+        opt.selected = true;
+        showtimeSelect.appendChild(opt);
+      }
+    }
+
+    updateShowtimeOptions();
+    setInterval(updateShowtimeOptions, 60 * 1000);
+
     for (let t in defaultSeats) {
       const seatRef = ref(db, "shows/" + t);
       get(seatRef).then((snap) => {
@@ -80,23 +118,25 @@
 
     const statusList = document.getElementById("statusList");
     const showsRef = ref(db, "shows");
-
     onValue(showsRef, (snapshot) => {
       statusList.innerHTML = ""; 
       snapshot.forEach((childSnap) => {
         const time = childSnap.key;
         const data = childSnap.val();
         const li = document.createElement("li");
-      li.textContent = `${time} の残り座席数: ${data.seats}`;
-      statusList.appendChild(li);
+        li.textContent = `${time} 公演:残席 ${data.seats}`;
+        statusList.appendChild(li);
+      });
     });
-  });
 
     document.getElementById("reserveForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("name").value;
       const showtime = document.getElementById("showtime").value;
       const numSeats = parseInt(document.getElementById("numSeats").value);
+
+      if (!name || numSeats < 1) return;
+
       const reservationsRef = ref(db, "reservations_" + showtime);
       const snapshot = await get(reservationsRef);
 
@@ -123,7 +163,7 @@
         await set(seatRef, { seats: seats - numSeats });
         await push(reservationsRef, { name, showtime, seats: numSeats });
         document.getElementById("message").textContent =
-          `予約を完了しました！`;
+          "予約を完了しました！";
       } else {
         document.getElementById("message").textContent = "残席がありません";
       }
@@ -131,9 +171,10 @@
 
     document.getElementById("cancelForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const cancelName = document.getElementById("cancelName").value;
+      const cancelName = document.getElementById("cancelName").value.trim();
       const cancelShowtime = document.getElementById("cancelShowtime").value;
-      const reservationsRef = ref(db, "reservations_" + showtime);
+      
+      const reservationsRef = ref(db, "reservations_" + cancelShowtime);
       const snapshot = await get(reservationsRef);
 
       if (snapshot.exists()) {
@@ -152,9 +193,11 @@
           const seatSnap = await get(seatRef);
           let seats = seatSnap.exists() ? seatSnap.val().seats : 0;
           await set(seatRef, { seats: seats + cancelSeats });
-          await remove(ref(db, "reservations_" + showtime + "/" + foundKey));
+
+          await remove(ref(db, "reservations_" + cancelShowtime + "/" + foundKey));
           document.getElementById("cancelMessage").textContent =
             "キャンセル完了しました！";
+          document.getElementById("cancelForm").reset();
         } else {
           document.getElementById("cancelMessage").textContent =
             "該当する予約が見つかりません。";
@@ -162,7 +205,6 @@
       }
     });
 
-    const statusList = document.getElementById("statusList");
     for (let t in defaultSeats) {
       const seatRef = ref(db, "shows/" + t);
     onValue(seatRef, (snap) => {
