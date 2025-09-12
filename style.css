@@ -45,7 +45,7 @@
     max-width: 400px;
     margin: 20px auto;
     padding: 25px;
-    background: rgba(0, 0, 0, 0.6);
+    background: #ffffff(0, 0, 0, 0.6);
     border-radius: 15px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.5);
   }
@@ -81,7 +81,7 @@
     cursor: pointer;
     font-size: 1rem;
     transition: 0.3s;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 8px #ffffff(0,0,0,0.3);
   }
 
   button:hover {
@@ -106,7 +106,7 @@
   }
 
   #statusList li {
-    background: rgba(255,255,255,0.1);
+    background: #ffffff(255,255,255,0.1);
     margin: 8px 0;
     padding: 12px;
     border-radius: 10px;
@@ -117,7 +117,7 @@
   }
 
   #statusList li:hover {
-    background: rgba(255,255,255,0.2);
+    background: #ffffff(255,255,255,0.2);
   }
 
   /* レスポンシブ */
