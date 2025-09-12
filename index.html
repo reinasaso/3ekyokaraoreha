@@ -70,10 +70,12 @@
       "13:40": 40,
     };
 
-    const seatRef = ref(db, "shows/" + showtime);
-    get(seatRef).then((snap) => {
-      if (!snap.exists()) set(seatRef, { seats: defaultSeats });
-    });
+    for (let t in defaultSeats) {
+      const seatRef = ref(db, "shows/" + t);
+      get(seatRef).then((snap) => {
+        if (!snap.exists()) set(seatRef, { seats: defaultSeats[t] });
+      });
+    }
 
     document.getElementById("reserveForm").addEventListener("submit", async (e) => {
       e.preventDefault();
