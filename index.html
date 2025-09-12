@@ -16,8 +16,6 @@
     <label>名前（ニックネーム）: <input type="text" id="name" required></label><br>
     <label>公演回:
       <select id="showtime" required>
-        <option value="08:30">08:30公演</option>
-        <option value="09:40">09:40公演</option>
         <option value="11:00">11:00公演</option>
         <option value="12:20">12:20公演</option>
         <option value="13:40">13:40公演</option>
@@ -34,8 +32,6 @@
     <label>名前: <input type="text" id="cancelName" required></label><br>
     <label>公演回:
       <select id="cancelShowtime" required>
-        <option value="08:30">08:30公演</option>
-        <option value="09:40">09:40公演</option>
         <option value="11:00">11:00公演</option>
         <option value="12:20">12:20公演</option>
         <option value="13:40">13:40公演</option>
@@ -68,14 +64,12 @@
     const db = getDatabase(app);
 
     const defaultSeats = {
-      "08:30": 40,
-      "09:40": 32,
       "11:00": 34,
       "12:20": 27,
       "13:40": 27,
     };
 
-    const showTimes = ["08:30", "09:40", "11:00", "12:20", "13:40"];
+    const showTimes = ["11:00", "12:20", "13:40"];
     const showtimeSelect = document.getElementById("showtime");
 
     function parseTimeToDate(timeStr) {
