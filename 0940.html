@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>劇予約サイト 09:40公演</title>
+</head>
+<body>
+  <h3>千葉県立千葉高等学校3年E組</h3>
+  <h1>今日から俺は!!</h1>
+  <h2>09:40公演 予約サイト</h2>
+
+  <!-- 予約フォーム -->
+  <form id="reserveForm">
+    <label>名前（ニックネーム）: <input type="text" id="name" required></label><br>
+    <label>人数: <input type="number" id="numSeats" value="1" min="1" max="10" required></label><br>
+    <button type="submit">予約する</button>
+  </form>
+  <p id="message"></p>
+
+  <!-- キャンセルフォーム -->
+  <h2>キャンセル</h2>
+  <form id="cancelForm">
+    <label>名前: <input type="text" id="cancelName" required></label><br>
+    <button type="submit">キャンセル</button>
+  </form>
+  <p id="cancelMessage"></p>
+
+  <!-- 予約状況 -->
+  <h2>予約状況</h2>
+  <ul id="statusList"></ul>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, get, set, push, remove, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBglB9eAPrGrzhbaj-6fcEy0yqok_Qz3zQ",
+        authDomain: "schoolfestival-2d778.firebaseapp.com",
+        databaseURL: "https://schoolfestival-2d778-default-rtdb.firebaseio.com",
+        projectId: "schoolfestival-2d778",
+        storageBucket: "schoolfestival-2d778.appspot.com",
+        messagingSenderId: "873567089206",
+        appId: "1:873567089206:web:5b922dc662cd8f99431e97",
+        measurementId: "G-HHZERDLHXQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const showtime = "09:40";
+    const defaultSeats = 40;
+
+    const seatRef = ref(db, "shows/" + showtime);
+    get(seatRef).then((snap) => {
+      if (!snap.exists()) set(seatRef, { seats: defaultSeats });
+    });
+
+    document.getElementById("reserveForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const numSeats = parseInt(document.getElementById("numSeats").value);
+      const reservationsRef = ref(db, "reservations_" + showtime);
+      const snapshot = await get(reservationsRef);
+
+      let duplicate = false;
+      if (snapshot.exists()) {
+        snapshot.forEach((child) => {
+          const data = child.val();
+          if (data.name === name) duplicate = true;
+        });
+      }
+      if (duplicate) {
+        document.getElementById("message").textContent =
+          "この名前はすでにこの公演で予約されています。";
+        return;
+      }
+
+      const seatSnap = await get(seatRef);
+      let seats = seatSnap.exists() ? seatSnap.val().seats : defaultSeats;
+
+      if (seats >= numSeats) {
+        await set(seatRef, { seats: seats - numSeats });
+        await push(reservationsRef, { name, seats: numSeats });
+        document.getElementById("message").textContent =
+          `予約完了！残席: ${seats - numSeats}`;
+      } else {
+        document.getElementById("message").textContent = "残席が足りません";
+      }
+    });
+
+    document.getElementById("cancelForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cancelName = document.getElementById("cancelName").value;
+      const reservationsRef = ref(db, "reservations_" + showtime);
+      const snapshot = await get(reservationsRef);
+
+      if (snapshot.exists()) {
+        let foundKey = null;
+        let cancelSeats = 0;
+        snapshot.forEach((child) => {
+          const data = child.val();
+          if (data.name === cancelName) {
+            foundKey = child.key;
+            cancelSeats = data.seats || 1;
+          }
+        });
+
+        if (foundKey) {
+          const seatSnap = await get(seatRef);
+          let seats = seatSnap.exists() ? seatSnap.val().seats : 0;
+          await set(seatRef, { seats: seats + cancelSeats });
+          await remove(ref(db, "reservations_" + showtime + "/" + foundKey));
+          document.getElementById("cancelMessage").textContent =
+            "キャンセル完了しました！";
+        } else {
+          document.getElementById("cancelMessage").textContent =
+            "該当する予約が見つかりません。";
+        }
+      }
+    });
+
+    const statusList = document.getElementById("statusList");
+    onValue(seatRef, (snap) => {
+      const seats = snap.exists() ? snap.val().seats : defaultSeats;
+      statusList.innerHTML = `<li>${showtime} 公演：残席 ${seats}</li>`;
+    });
+  </script>
+</body>
+</html>
