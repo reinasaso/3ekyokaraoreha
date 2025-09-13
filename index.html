@@ -139,27 +139,27 @@
       const numSeats = parseInt(document.getElementById("numSeats").value);
       const nameRaw = document.getElementById("name").value.trim();
       const name = nameRaw.trim().toLowerCase().replace(/[.#$\[\]/]/g, "_");
-      if(!defauktSeats.hasOwnProperty(showtime)) {
+      if(!defaultSeats.hasOwnProperty(showtime)) {
         document.getElementById("message").textContent = "現在選択できる公演がありません。";
         return;
       }
       if (!name || numSeats < 1) return;
 
-      const showRef = ref(db, 'shows/${showtime}');
+      const showRef = ref(db, `shows/${showtime}`);
       let success = false;
 
       await runTransaction(showRef, (current) => {
         if (current == null) current = { seats: defaultSeats[showtime],reservations: {} };
         if (!current.reservations) current.reservations = {};
 
-        if (current.reservations[namekey]) {
+        if (current.reservations[name]) {
           return;
         }
-        if (currentData.seats < numSeats) {
+        if (current.seats < numSeats) {
           return;
         }
         current.seats -= numSeats;
-        current.reservations[namekey] = { seats: numSeats, createdAt: Date.now() };
+        current.reservations[name] = { seats: numSeats, createdAt: Date.now() };
         return current;
       }).then((result) => {
         if (result.committed) {
@@ -171,7 +171,7 @@
     });
 
     if (success) {
-      localStorage.setItem("resercedName", nameRaw);
+      localStorage.setItem("reservedName", nameRaw);
       localStorage.setItem("reservedShowtime", showtime);
       localStorage.setItem("reservedSeats", String(numSeats));
       window.location.href = "success.html";
@@ -183,9 +183,9 @@
       const cancelShowtime = document.getElementById("cancelShowtime").value;
       const cancelNameRaw = document.getElementById("cancelName").value.trim();
       const cancelName = cancelNameRaw.trim().toLowerCase().replace(/[.#$\[\]/]/g, "_");
-      const seatRef = ref(db, 'shows/${cancelShowtime}';
+      const showRef = ref(db, `shows/${cancelShowtime}`);
         
-      await runTransaction(showRef, (current) => {
+      await runTransaction(seatRef, (current) => {
         if (!current || !current.reservations || !current.reservations[cancelName]) {
           return;
         }
