@@ -69,12 +69,13 @@
     const db = getDatabase(app);
 
     const defaultSeats = {
+      "07:00": 27,
       "11:00": 27,
       "12:20": 27,
       "13:40": 27,
     };
 
-    const showTimes = ["11:00", "12:20", "13:40"];
+    const showTimes = ["07:00", "11:00", "12:20", "13:40"];
     const showtimeSelect = document.getElementById("showtime");
 
     function parseTimeToDate(timeStr) {
