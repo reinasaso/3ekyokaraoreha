@@ -7,6 +7,27 @@
 </head>
 <body>
   <h1>予約が完了しました！</h1>
+<div id="reservationInfo">
+  <p>お名前: <span id="resName"></span></p>
+  <p>公演回: <span id="resShowtime"></span></p>
+  <p>人数: <span id="resSeats"></span></p>
+</div>
+<a href="index.html" onclick="localStorage.clear()">トップページに戻る</a>
+
+<script>
+  const name = localStorage.getItem("reservedName");
+  const showtime = localStorage.getItem("reservedShowtime");
+  const seats = localStorage.getItem("reservedSeats");
+
+  if (name && showtime && seats) {
+    document.getElementById("resName").textContent = name;
+    document.getElementById("resShowtime").textContent = showtime;
+    document.getElementById("resSeats").textContent = seats;
+  } else {
+    document.getElementById("reservationInfo").innerHTML =
+      "<p>予約情報が見つかりません。</p>";
+  }
+</script>
   <p>ご来場をお待ちしております。</p>
   <a href="index.html">トップページに戻る</a>
 </body>
