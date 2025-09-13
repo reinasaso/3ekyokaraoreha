@@ -147,26 +147,24 @@
       const seatRef = ref(db, "shows/" + showtime);
       let success = false;
 
-      await runTransaction(seatRef,(currentDate) => {
-        if (currentDate == null) {
-          return;
-        }
+      await runTransaction(seatRef,(currentData) => {
+        if (currentData == null) return;
 
-      if (currentDate.seats >= numSeats) {
-        return { seats: currentDate.seats - numSeats };
-      } else {
-        return currentData;
-      }
+        if (currentData.seats >= numSeats) {
+          return { seats: currentData.seats - numSeats };
+        } else {
+          return currentData;
+        }
       }).then(async (result) => {
         if (result.committed) {
           
           const snap = await get(reservationsRef)
           if (snap.exists()) {
-            await runTransaction(seatRef, (currentDate) => {
-              if (currentDate) {
-                return { seats: currentDate.seats + numSeats };
+            await runTransaction(seatRef, (currentData) => {
+              if (currentData) {
+                return { seats: currentData.seats + numSeats };
               }
-              return currentDate;
+              return currentData;
             });
             document.getElementById("message").textContent =
               "この名前はすでにこの公演で予約されています。";;
