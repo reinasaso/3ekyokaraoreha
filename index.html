@@ -177,7 +177,10 @@
     });
 
     if (success) {
-      window.location.href = "success.html";
+      const nameParam = encodeURIComponent(nameRaw);
+      const showtimeParam = encodeURIComponent(showtime);
+      const seatsParam = encodeURIComponent(numSeats);
+      window.location.href = `success.html?name=${nameParam}&showtime=${showtimeParam}&seats=${seatsParam}`;
     }
     });
 
