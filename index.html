@@ -185,7 +185,7 @@
       const cancelName = cancelNameRaw.trim().toLowerCase().replace(/[.#$\[\]/]/g, "_");
       const showRef = ref(db, `shows/${cancelShowtime}`);
         
-      await runTransaction(seatRef, (current) => {
+      await runTransaction(showRef, (current) => {
         if (!current || !current.reservations || !current.reservations[cancelName]) {
           return;
         }
