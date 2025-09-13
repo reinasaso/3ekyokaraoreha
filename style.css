@@ -130,3 +130,44 @@
     }
   }
 </style>
+
+/* success.html専用 */
+body {
+  background: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  padding: 50px;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+#reservationInfo {
+  background: #fff;
+  display: inline-block;
+  padding: 20px 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#reservationInfo p {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+a {
+  display: inline-block;
+  margin-top: 30px;
+  text-decoration: none;
+  color: #fff;
+  background-color: #3498db;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+a:hover {
+  background-color: #2980b9;
+}
