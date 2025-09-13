@@ -12,7 +12,7 @@
   <p>公演回: <span id="resShowtime"></span></p>
   <p>人数: <span id="resSeats"></span></p>
 </div>
-<a href="index.html" onclick="localStorage.clear()">トップページに戻る</a>
+<a href="index.html" id="back">トップページに戻る</a>
 
 <script>
   const name = localStorage.getItem("reservedName");
@@ -27,6 +27,10 @@
     document.getElementById("reservationInfo").innerHTML =
       "<p>予約情報が見つかりません。</p>";
   }
+
+  document.getElementById("back").addEventListener("click", () => {
+    localStorage.clear();
+  });
 </script>
   <p>ご来場をお待ちしております。</p>
   <a href="index.html">トップページに戻る</a>
